@@ -43,7 +43,14 @@ void test_list_less()
 	list.insert(11);
 	list.insert(30);
 
+	std::cout << "-----------------------Normal iterator----------------------\n";
 	for (auto it = list.begin(); it != list.end(); it++)
+	{
+		std::cout << *it << "\t";
+	}
+	std::cout << '\n';
+	std::cout << "-----------------------Reverse iterator----------------------\n";
+	for (auto it = list.rbegin(); it != list.rend(); it++)
 	{
 		std::cout << *it << "\t";
 	}

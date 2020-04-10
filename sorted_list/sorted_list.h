@@ -2,6 +2,7 @@
 #include <functional>
 #include <iostream>
 #include "node.h"
+#include "iterator.h"
 
 namespace swe4
 {
@@ -19,100 +20,24 @@ namespace swe4
 			clear();
 		}
 
-		template<typename T>
-		class sorted_list_iterator
+		iterator<T> begin()
 		{
-		public:
-			sorted_list_iterator() : current_node{ nullptr } {}
-			sorted_list_iterator(node<T>* start) : current_node{ start } {}
-			sorted_list_iterator(sorted_list_iterator const& copy)
-			{
-				this->current_node = copy.current_node;
-			}
-			~sorted_list_iterator(){}
-			sorted_list_iterator& operator=(const sorted_list_iterator & other)
-			{
-				this->current_node = other.current_node;
-				return *this;
-			}
-
-			bool operator==(const sorted_list_iterator & other) const
-			{
-				//Werte vergleichen fand ich hier keine Loesung, wegen dem one past end für den end iterator (nullptr deref).
-				return current_node == other.current_node;
-			}
-
-			bool operator!=(const sorted_list_iterator& other) const
-			{
-				return !(*this == other);
-			}
-
-			T& operator*() const
-			{
-				return current_node->value;
-			}
-
-			node<T>* operator->() const
-			{
-				return current_node;
-			}
-
-			sorted_list_iterator& operator++ ()
-			{
-				this->current_node = this->current_node->next;
-				return *this;
-			}
-
-			sorted_list_iterator operator++ (int)
-			{
-				sorted_list_iterator old = *this;
-				++(*this);
-				return old;
-			}
-
-			sorted_list_iterator operator-- ()
-			{
-				this->current_node = this->current_node->previous;
-				return *this;
-			}
-
-			sorted_list_iterator operator-- (int)
-			{
-				sorted_list_iterator old = *this;
-				--(*this);
-				return old;
-			}
-
-			void swap(sorted_list_iterator& left, sorted_list_iterator& right)
-			{
-				//Oder std::swap
-				T temp = *left;
-				*left = *right;
-				*right = temp;
-			}
-
-		private:
-			node<T>* current_node;
-		};
-
-		sorted_list_iterator<T> begin()
-		{
-			return sorted_list_iterator<T>(m_head);
+			return iterator<T>(m_head);
 		}
 
-		sorted_list_iterator<T> end()
+		iterator<T> end()
 		{
-			return sorted_list_iterator<T>(m_tail->next);
+			return iterator<T>(m_tail->next);
 		}
 
-		sorted_list_iterator<T> rbegin()
+		reverse_iterator<T> rbegin()
 		{
-			return sorted_list_iterator<T>(m_head);
+			return reverse_iterator<T>(m_tail);
 		}
 
-		sorted_list_iterator<T> rend()
+		reverse_iterator<T> rend()
 		{
-			return sorted_list_iterator<T>(m_tail->next);
+			return reverse_iterator<T>(m_head->previous);
 		}
 
 		void insert(const T& value)
