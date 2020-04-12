@@ -1,2 +1,3 @@
 ﻿  main.cpp
-  sorted_list.vcxproj -> C:\Users\kampf\Desktop\FH Hagenberg\4.Semester\SWE4UE\sorted_list\x64\Debug\sorted_list.exe
+C:\Users\fatca\Desktop\FH Hagenberg\4.Semester\SWB4UE\Uebung3\sorted_list\sorted_list\main.cpp(220,7): warning C4834: discarding return value of function with 'nodiscard' attribute
+  sorted_list.vcxproj -> C:\Users\fatca\Desktop\FH Hagenberg\4.Semester\SWB4UE\Uebung3\sorted_list\x64\Debug\sorted_list.exe

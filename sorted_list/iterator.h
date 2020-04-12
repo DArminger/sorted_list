@@ -4,6 +4,12 @@ template<typename T>
 class iterator
 {
 public:
+	using iterator_category = std::bidirectional_iterator_tag;
+	using value_type = node<T>*;
+	using difference_type = std::ptrdiff_t;
+	using pointer = value_type*;
+	using reference = value_type&;
+	
 	iterator() : current_node{ nullptr } {}
 	iterator(node<T>* start) : current_node{ start } {}
 	iterator(iterator const& copy)
@@ -34,9 +40,9 @@ public:
 		return current_node->value;
 	}
 
-	virtual node<T>* operator->() const
+	virtual T& operator->() const
 	{
-		return current_node;
+		return current_node->value;
 	}
 
 	virtual iterator& operator++ ()
@@ -73,8 +79,12 @@ public:
 		*right = temp;
 	}
 
-protected:
-	node<T>* current_node;
+	static void delete_node(iterator del)
+	{
+		delete del.current_node;
+	}
+	
+	value_type current_node;
 };
 
 template<typename T>
@@ -97,7 +107,7 @@ public:
 	iterator<T> operator-- (int) override
 	{
 		reverse_iterator old = *this;
-		++(*this);
+		--(*this);
 		return old;
 	}
 
@@ -110,7 +120,7 @@ public:
 	iterator<T> operator++ (int) override
 	{
 		reverse_iterator old = *this;
-		--(*this);
+		++(*this);
 		return old;
 	}
 };

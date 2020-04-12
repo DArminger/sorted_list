@@ -40,6 +40,111 @@ namespace swe4
 			return reverse_iterator<T>(m_head->previous);
 		}
 
+		std::pair<iterator<T>, bool> insertPair(const T& value)
+		{
+			auto new_node = new node<T>(value);
+			element_count++;
+
+			if (m_head == nullptr) {
+				m_head = new_node;
+				m_tail = m_head;
+				return std::make_pair(iterator<T>(m_head), true);
+			}
+
+
+			if (comp(new_node->value, m_head->value))
+			{
+				new_node->next = m_head;
+				m_head->previous = new_node;
+				m_head = new_node;
+				return std::make_pair(iterator<T>(m_head), true);
+			}
+
+			if (!comp(new_node->value, m_tail->value))
+			{
+				new_node->previous = m_tail;
+				m_tail->next = new_node;
+				m_tail = new_node;
+				return std::make_pair(iterator<T>(m_tail), true);;
+			}
+
+			auto temp = m_head;
+			while (temp && !comp(new_node->value, temp->value))
+			{
+				temp = temp->next;
+			}
+			if (temp != nullptr)
+			{
+				new_node->next = temp;
+				new_node->previous = temp->previous;
+				temp->previous->next = new_node;
+				temp->previous = new_node;
+				std::make_pair(iterator<T>(new_node), true);
+			}
+
+			element_count--;
+			return std::make_pair(iterator<T>(nullptr), false);
+		}
+
+		iterator<T> insert(iterator<T> hint, const T& value)
+		{
+			auto new_node = new node<T>(value);
+
+			auto temp = hint.current_node;
+			while (temp && !comp(new_node->value, temp->value))
+			{
+				temp = temp->next;
+			}
+			if (temp != nullptr)
+			{
+				new_node->next = temp;
+				new_node->previous = temp->previous;
+				temp->previous->next = new_node;
+				temp->previous = new_node;
+				element_count++;
+				return iterator<T>(temp);
+			}
+			return iterator<T>(nullptr);
+		}
+
+		void erase(iterator<T> first, iterator<T> last)
+		{
+			auto it = first;
+			node<T>* temp_first_before{ nullptr };
+			node<T>* temp_last_after{ nullptr };
+			bool before{ false };
+			bool after{ false };
+			
+			if (first != m_head && first != nullptr) {
+				temp_first_before = first.current_node->previous;
+				before = true;
+			}
+			if (last != m_tail && last != nullptr) {
+				temp_last_after = last.current_node;
+				after = false;
+			}			
+			
+			while (it != last)	//If none of the upper cases apply, then first and last are begin and end
+			{
+				auto temp = it;
+				it = it.current_node->next;
+				iterator<T>::delete_node(temp);
+				temp = nullptr;
+				element_count--;
+			}
+			if (before) {
+				temp_first_before->next = temp_last_after;
+			}
+			if (after) {
+				temp_last_after->previous = temp_first_before;
+			}
+			if(!before && !after)
+			{
+				m_head = nullptr;
+				m_tail = nullptr;
+			}
+		}
+		
 		void insert(const T& value)
 		{
 			auto new_node = new node<T>(value);
@@ -82,6 +187,45 @@ namespace swe4
 				new_node->previous = temp->previous;
 				temp->previous->next = new_node;
 				temp->previous = new_node;
+			}
+		}
+
+		template<class UnaryPredicate>
+		void erase_if(UnaryPredicate p)
+		{
+			node<T>* before {nullptr};
+			node<T>* after {nullptr};
+			bool relink_before{ false };
+			bool relink_after{ false };
+			auto i = m_head;
+			while(i != nullptr)
+			{
+				if (p(i->value))
+				{
+					if (i->previous != nullptr)
+					{
+						before = i->previous;
+						relink_before = true;
+					}
+					if (i->next != nullptr)
+					{
+						after = i->next;
+						relink_after = after;
+					}
+					if (relink_before)
+					{
+						before->next = after;
+					}
+					if (relink_after)
+					{
+						after->previous = before;
+					}
+					delete i;
+					i = after;
+
+					element_count--;
+				}
+				else i = i->next;
 			}
 		}
 
@@ -218,7 +362,7 @@ namespace swe4
 		{
 			for (node<T>* i = m_head; i != nullptr; i = i->next)
 			{
-				out << i->value;
+				out << i->value << '\t';
 			}
 			out << '\n';
 			return out;
